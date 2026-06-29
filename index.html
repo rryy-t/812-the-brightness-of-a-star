@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: #1e2538;
+      --text-color: #f3f4f6;
+      --accent-color: #3b82f6;
+      --star-glow: #ffdd67;
+    }
+    
+    body {
+      font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      color: #fff;
+      margin-bottom: 5px;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #9ca3af;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    /* 탭 메뉴 */
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #374151;
+      padding-bottom: 10px;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: #9ca3af;
+      padding: 8px 16px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    .tab-btn.active {
+      color: var(--accent-color);
+      border-bottom: 3px solid var(--accent-color);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* 시각화 영역 */
+    .space-view {
+      width: 100%;
+      height: 250px;
+      background: radial-gradient(circle at center, #1a233a 0%, #05070c 100%);
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 20px;
+      border: 1px solid #374151;
+    }
+
+    /* 우주 배경 별무리 효과 */
+    .space-view::before {
+      content: "";
+      position: absolute;
+      width: 2px; height: 2px;
+      background: white;
+      box-shadow: 100px 50px white, 200px 150px white, 300px 80px white, 400px 200px white, 500px 100px white, 600px 40px white, 700px 180px white;
+      opacity: 0.5;
+    }
+
+    /* 나란히 비교하는 영역 스카이박스 */
+    .compare-box {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 100%;
+      padding: 0 20px;
+    }
+
+    .star-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 120px;
+      height: 160px;
+    }
+
+    .star-container {
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .star {
+      background-color: #fff;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+
+    .star-label {
+      margin-top: 15px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .star-brightness {
+      font-size: 0.8rem;
+      color: #f59e0b;
+      margin-top: 4px;
+    }
+
+    .vs-sign {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #4b5563;
+    }
+
+    .earth {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      font-size: 0.8rem;
+    }
+
+    .earth-icon {
+      width: 30px;
+      height: 30px;
+      background: #4f46e5;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: inset -5px -5px 10px #000, 0 0 10px rgba(79, 70, 229, 0.5);
+    }
+
+    /* 컨트롤러 영역 */
+    .control-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      background: rgba(0,0,0,0.2);
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    label {
+      font-size: 0.95rem;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .value-display {
+      color: #3b82f6;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-color);
+      cursor: pointer;
+    }
+
+    /* 정보 창 */
+    .info-box {
+      background: rgba(59, 130, 246, 0.1);
+      border-left: 4px solid var(--accent-color);
+      padding: 12px;
+      border-radius: 0 8px 8px 0;
+      margin-top: 15px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* 교과서 예시 버튼 */
+    .preset-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: #374151;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      background: #4b5563;
+    }
+
+    .btn.active-preset {
+      background: var(--accent-color);
+    }
+
+    /* 기준선 표시 (10pc) */
+    .pc-line {
+      position: absolute;
+      left: 0; right: 0;
+      border-top: 1px dashed rgba(239, 68, 68, 0.5);
+      text-align: right;
+      padding-right: 10px;
+      font-size: 0.75rem;
+      color: #ef4444;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>별의 밝기와 등급 가상 실험실</h1>
+  <div class="subtitle">중학교 2학년 과학 (별의 밝기와 거리 시뮬레이션)</div>
+
+  <div class="container">
+    <div class="tabs">
+      <button id="btn-tab1" class="tab-btn active" onclick="switchTab('tab1')">1. 겉보기 등급과 밝기</button>
+      <button id="btn-tab2" class="tab-btn" onclick="switchTab('tab2')">2. 거리와 절대 등급</button>
+    </div>
+
+    <div id="tab1" class="tab-content active">
+      <div class="space-view">
+        <div class="compare-box">
+          <div class="star-wrapper">
+            <div class="star-container">
+              <div id="base-star-1" class="star" style="width: 50px; height: 50px; box-shadow: 0 0 48px 24px rgba(255, 221, 103, 0.8);"></div>
+            </div>
+            <div class="star-label" style="color: #60a5fa;">기준: 1등급 별</div>
+            <div class="star-brightness">상대 밝기: 100</div>
+          </div>
+          
+          <div class="vs-sign">VS</div>
+          
+          <div class="star-wrapper">
+            <div class="star-container">
+              <div id="current-star" class="star"></div>
+            </div>
+            <div id="current-star-label" class="star-label" style="color: #f59e0b;">현재: 1등급 별</div>
+            <div id="current-star-bright" class="star-brightness">상대 밝기: 100</div>
+          </div>
+
+          <div class="vs-sign">VS</div>
+
+          <div class="star-wrapper">
+            <div class="star-container">
+              <div id="base-star-6" class="star" style="width: 12px; height: 12px; box-shadow: 0 0 8px 4px rgba(255, 221, 103, 0.8);"></div>
+            </div>
+            <div class="star-label" style="color: #9ca3af;">기준: 6등급 별</div>
+            <div class="star-brightness">상대 밝기: 1</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="control-panel">
+        <div class="control-group">
+          <label>겉보기 등급 선택: <span id="mag1-val" class="value-display">1등급</span></label>
+          <input type="range" id="mag1-slider" min="1" max="6" step="1" value="1">
+        </div>
+        <div class="info-box" id="info-box-1"></div>
+      </div>
+    </div>
+
+    <div id="tab2" class="tab-content">
+      <div class="space-view" style="height: 300px;">
+        <div class="pc-line" style="bottom: 120px;">★ 기준 거리: 10 pc (절대 등급 측정선)</div>
+        <div id="star2" class="star" style="position: absolute; left: 50%; transform: translate(-50%, -50%);"></div>
+        <div class="earth">
+          <div class="earth-icon"></div>
+          <div>지구</div>
+        </div>
+      </div>
+      <div class="control-panel">
+        <div class="preset-buttons">
+          <button id="preset-custom" class="btn active-preset" onclick="loadPreset('custom')">직접 조절</button>
+          <button id="preset-sun" class="btn" onclick="loadPreset('sun')">태양</button>
+          <button id="preset-sirius" class="btn" onclick="loadPreset('sirius')">시리우스</button>
+          <button id="preset-polaris" class="btn" onclick="loadPreset('polaris')">북극성</button>
+        </div>
+        <hr style="border: 0; border-top: 1px solid #374151; margin: 5px 0;">
+        <div class="control-group">
+          <label>별까지의 거리: <span id="dist-val" class="value-display">10 pc</span></label>
+          <input type="range" id="dist-slider" min="1" max="100" step="1" value="10">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px;">
+          <div>겉보기 등급: <span id="app-mag-val" style="color:#f59e0b; font-weight:bold;">1.4</span></div>
+          <div>절대 등급 (10pc): <span id="abs-mag-val" style="color:#ef4444; font-weight:bold;">1.4</span></div>
+        </div>
+        <div class="info-box" id="info-box-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 탭 전환 시스템
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.add('active');
+      if(tabId === 'tab1') document.getElementById('btn-tab1').classList.add('active');
+      if(tabId === 'tab2') document.getElementById('btn-tab2').classList.add('active');
+    }
+
+    // --- TAB 1 기능구현 ---
+    const mag1Slider = document.getElementById('mag1-slider');
+    const mag1Val = document.getElementById('mag1-val');
+    const currentStar = document.getElementById('current-star');
+    const currentStarLabel = document.getElementById('current-star-label');
+    const currentStarBright = document.getElementById('current-star-bright');
+    const infoBox1 = document.getElementById('info-box-1');
+
+    function updateTab1() {
+      const mag = parseInt(mag1Slider.value);
+      mag1Val.innerText = mag + "등급";
+      currentStarLabel.innerText = `현재: ${mag}등급 별`;
+      
+      // 6등급 밝기를 1로 기준 잡았을 때의 상대 밝기 계산
+      const relativeBrightness = Math.pow(100, (6 - mag) / 5);
+      currentStarBright.innerText = `상대 밝기: ${relativeBrightness.toFixed(1)}`;
+      
+      // 등급별 크기 및 광채(Glow) 변화 산출
+      const baseSize = 50; 
+      const size = baseSize * Math.pow(0.75, mag - 1);
+      const glow = (7 - mag) * 8;
+      
+      currentStar.style.width = size + 'px';
+      currentStar.style.height = size + 'px';
+      currentStar.style.boxShadow = `0 0 ${glow}px ${glow/2}px rgba(255, 221, 103, 0.8)`;
+      
+      // 교과서 기준 텍스트 출력
+      let descText = "";
+      if (mag === 1) {
+        descText = `현재 <strong>1등급 별</strong>입니다. 가장 어두운 <strong>6등급 별보다 100배</strong> 더 밝습니다.`;
+      } else if (mag === 6) {
+        descText = `현재 <strong>6등급 별</strong>입니다. 가장 밝은 <strong>1등급 별보다 100배</strong> 더 어둡습니다.`;
+      } else {
+        const timesFromOne = Math.pow(2.512, mag - 1).toFixed(1);
+        const timesFromSix = Math.pow(2.512, 6 - mag).toFixed(1);
+        descText = `현재 <strong>${mag}등급 별</strong>입니다. <br>
+                    • 1등급 별보다 약 <strong>${timesFromOne}배</strong> 어둡고, <br>
+                    • 6등급 별보다 약 <strong>${timesFromSix}배</strong> 밝습니다.`;
+      }
+      
+      infoBox1.innerHTML = `<strong>[개념 확인]</strong> ${descText}<br><span style='font-size:0.85rem; color:#9ca3af; display:block; margin-top:5px;'>* 별의 등급이 1등급씩 커질 때마다 밝기는 약 2.5배씩 어두워집니다.</span>`;
+    }
+    mag1Slider.addEventListener('input', updateTab1);
+    updateTab1();
+
+
+    // --- TAB 2 기능구현 (거리와 절대등급) ---
+    const distSlider = document.getElementById('dist-slider');
+    const distVal = document.getElementById('dist-val');
+    const star2 = document.getElementById('star2');
+    const appMagVal = document.getElementById('app-mag-val');
+    const absMagVal = document.getElementById('abs-mag-val');
+    const infoBox2 = document.getElementById('info-box-2');
+
+    let currentStarData = { name: "커스텀 별", absMag: 1.4 };
+
+    const presets = {
+      custom: { absMag: 1.4 },
+      sun: { absMag: 4.8 },     
+      sirius: { absMag: 1.4 },  
+      polaris: { absMag: -3.7 } 
+    };
+
+    function loadPreset(type) {
+      document.querySelectorAll('.preset-buttons .btn').forEach(b => b.classList.remove('active-preset'));
+      document.getElementById('preset-' + type).classList.add('active-preset');
+      
+      currentStarData.absMag = presets[type].absMag;
+      currentStarData.name = document.getElementById('preset-' + type).innerText;
+      
+      if(type !== 'custom') {
+        if(type === 'sun') distSlider.value = 1; 
+        if(type === 'sirius') distSlider.value = 3; 
+        if(type === 'polaris') distSlider.value = 100;
+      }
+      updateTab2();
+    }
+
+    function updateTab2() {
+      const distance = parseInt(distSlider.value);
+      distVal.innerText = distance + " pc";
+      
+      const absMag = currentStarData.absMag;
+      const appMag = absMag + 5 * Math.log10(distance) - 5;
+      
+      appMagVal.innerText = appMag.toFixed(1) + " 등급";
+      absMagVal.innerText = absMag.toFixed(1) + " 등급";
+      
+      const visualY = 240 - (Math.log10(distance) * 90); 
+      star2.style.bottom = visualY + 'px';
+      
+      const baseSize = 30;
+      const size = Math.max(5, baseSize * (10 / distance));
+      const glow = Math.max(0, (6 - appMag) * 5);
+      
+      star2.style.width = size + 'px';
+      star2.style.height = size + 'px';
+      star2.style.boxShadow = `0 0 ${glow}px ${glow/3}px rgba(255, 221, 103, 0.8)`;
+      
+      let comparisonText = "";
+      if (distance === 10) {
+        comparisonText = `현재 별은 10pc 거리에 있으므로 <strong>겉보기 등급과 절대 등급이 같습니다.</strong>`;
+      } else if (distance < 10) {
+        comparisonText = `10pc보다 <strong>가까이</strong> 있으므로, 실제 밝기(절대등급 ${absMag})보다 우리 눈에 <strong>더 밝게(겉보기등급 ${appMag.toFixed(1)})</strong> 보입니다. 따라서 겉보기 등급이 절대 등급보다 작습니다.`;
+      } else {
+        comparisonText = `10pc보다 <strong>멀리</strong> 있으므로, 실제 밝기(절대등급 ${absMag})보다 우리 눈에 <strong>더 어둡게(겉보기등급 ${appMag.toFixed(1)})</strong> 보입니다. 따라서 겉보기 등급이 절대 등급보다 큽니다.`;
+      }
+      infoBox2.innerHTML = `<strong>[분석]</strong> ${comparisonText}`;
+    }
+
+    distSlider.addEventListener('input', updateTab2);
+    updateTab2();
+  </script>
+</body>
+</html>
